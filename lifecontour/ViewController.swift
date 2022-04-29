@@ -8,92 +8,76 @@
 import UIKit
 
 class ViewController: UIViewController {
-
-    //player`1
-    @IBOutlet weak var playerLabel1: UILabel!
-    @IBOutlet weak var minusButton1p1: UIButton!
-    @IBOutlet weak var minusButton5P1: UIButton!
-    @IBOutlet weak var plusButton1p1: UIButton!
-    @IBOutlet weak var plusButton5p1: UIButton!
     
-    //player`2
-    @IBOutlet weak var playerLabel2: UILabel!
-    @IBOutlet weak var minusButton1p2: UIButton!
-    @IBOutlet weak var minusButton5P2: UIButton!
-    @IBOutlet weak var plusButton1p2: UIButton!
-    @IBOutlet weak var plusButton5p2: UIButton!
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var historyButton: UIButton!
+    @IBOutlet weak var addPlayerBtn: UIButton!
     
-    //scores
-    var scorep1 = 20
-    var scorep2 = 20
-    
-    //let dataScoure = DataSource()
-
+    var playersList : [String] = ["Player 1", "Player 2", "Player 3", "Player 4"]
+        
     override func viewDidLoad() {
-        super.viewDidLoad()
-        checkLose()
-        
+        super.viewDidLoad();
+        tableView.delegate = self
+        tableView.dataSource = self
     }
     
-    @IBAction func minusFivePlayerOne(_ sender: Any) {
-        scorep1 -= 5
-        checkLose()
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 180.0
     }
-    
-    
-    @IBAction func minusOnePlayerOne(_ sender: Any) {
-        scorep1 -= 1
-        checkLose()
-    }
-    
-    
-    @IBAction func plusOnePlayerOne(_ sender: Any) {
-        scorep1 += 1
-        checkLose()
-    }
-    
-    
-    @IBAction func plusFivePlayerOne(_ sender: Any) {
-        scorep1 += 5
-        checkLose()
-    }
-    
-    
-    @IBAction func minusFivePlayerTwo(_ sender: Any) {
-        scorep2 -= 5
-        checkLose()
-    }
-    
-    
-    @IBAction func minusOnePlayerTwo(_ sender: Any) {
-        scorep2 -= 1
-        checkLose()
-    }
-    
-    
-    @IBAction func plusOnePlayerTwo(_ sender: Any) {
-        scorep2 += 1
-        checkLose()
-    }
-    
-    
-    @IBAction func plusFivePlayerTwo(_ sender: Any) {
-        scorep2 += 5
-        checkLose()
-    }
-    
-    func checkLose() {
-        if scorep1 <= 0 {
-            playerLabel1.text = "Player 1 LOSES!"
-        } else {
-            playerLabel1.text = "\(scorep1)"
-        }
-        
-        if scorep2 <= 0 {
-            playerLabel2.text = "Player 2 LOSES!"
-        } else {
-            playerLabel2.text = "\(scorep2)"
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ShowHistory" {
+            let hisVC = segue.destination as! HistoryViewController
+            hisVC.history = "\(history)"
         }
     }
+    
+    @IBAction func addPlayerFuc(_ sender: Any) {
+        playersList.append("Player \(playersList.count + 1)")
+        tableView.reloadData()
+    }
+}
+
+extension ViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        return nil
+    }
+}
+
+extension ViewController: UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return playersList.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! TableViewCell
+        cell.playerName.text = playersList[indexPath.row]
+        cell.delegate = self
+        return cell
+    }
+}
+
+var history : String = ""
+
+extension ViewController: TableViewCellProtocol {
+    func lifeNumber(_ sender: String) {
+        history.append(sender)
+    }
+    
+    func minusBtnTouchUpInside(_ sender: Any) {
+        addPlayerBtn.isEnabled = false
+        history.append("Player lost 1 life \n")
+    }
+    
+    func addBtnTouchUpInside(_ sender: Any) {
+        addPlayerBtn.isEnabled = false
+        history.append("Player gain 1 life \n")
+    }
+
+    func okBtnTapped(_ sender: Any) {
+        addPlayerBtn.isEnabled = false
+    }
+
 }
 
