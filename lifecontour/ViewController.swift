@@ -22,7 +22,7 @@ class ViewController: UIViewController {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 180.0
+        return 160.0
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -34,7 +34,19 @@ class ViewController: UIViewController {
     
     @IBAction func addPlayerFuc(_ sender: Any) {
         playersList.append("Player \(playersList.count + 1)")
+        if playersList.count <= 8 {
         tableView.reloadData()
+        }
+    }
+    
+    @IBAction func gameRestart(_ sender: Any) {
+        gameReload()
+    }
+    
+    func gameReload() {
+        playersList = ["Player 1", "Player 2", "Player 3", "Player 4"]
+        tableView.reloadData()
+        addPlayerBtn.isEnabled = true
     }
 }
 
@@ -58,6 +70,7 @@ extension ViewController: UITableViewDataSource {
     }
 }
 
+ 
 var history : String = ""
 
 extension ViewController: TableViewCellProtocol {
@@ -78,6 +91,16 @@ extension ViewController: TableViewCellProtocol {
     func okBtnTapped(_ sender: Any) {
         addPlayerBtn.isEnabled = false
     }
-
+    func checkLife(_ life: Int) {
+        if life < 0 {
+            let alert = UIAlertController(title: "Game Over" , message: "Player \(playersList.count)" , preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {(_) in self.gameReload()
+            }))
+            self.present(alert, animated:true, completion: nil)
+            addPlayerBtn.isEnabled = true
+            history.append("Player \(playersList.count) game over! \n")
+            
+        }
+    }
 }
 
